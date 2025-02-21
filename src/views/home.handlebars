@@ -1,0 +1,19 @@
+<div class="container">
+    <h1 class="title">Hello {{user.firstName}} {{user.lastName}}</h1>
+    <p class="subtitle">Welcome to our shop page.</p>
+
+    <div class="product-grid">
+    {{#each products}}
+            <div class="product-card">
+                <img src="{{thumbnail}}" alt="{{title}}" class="product-image">
+                <div class="product-info">
+                    <h2 class="product-title">{{title}}</h2>
+                    <p class="product-description">{{description}}</p>
+                    <p class="product-price">$ {{price}}</p>
+                    <p class="product-stock">Stock: {{stock}}</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</div>
