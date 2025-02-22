@@ -1,31 +1,88 @@
 import { Router } from "express";
+import ProductManager from "../ProductManager.js";
 
-const usersRoutes = Router()
+const productsRouter = Router()
 
-const products = [
-    { title: "Mochila :))", description: "A high-performance backpack", price: 1500, thumbnail: "3.jpg", code: "LT127", stock: 5, id: 3 },
-    { title: "Monitor", description: "A 4K UHD 27-inch monitor", price: 300, thumbnail: "4.jpg", code: "MN123", stock: 15, id: 4 },
-    { title: "Tablet", description: "A tablet with a 10-inch display", price: 400, thumbnail: "6.jpg", code: "TB789", stock: 25, id: 6 },
-    { title: "Headphones", description: "Wireless noise-cancelling headphones", price: 200, thumbnail: "7.jpg", code: "HP123", stock: 40, id: 7 },
-    { title: "Smartwatch", description: "A smartwatch with heart rate monitor", price: 250, thumbnail: "8.jpg", code: "SW456", stock: 35, id: 8 },
-    { title: "External Hard Drive", description: "A 1TB external hard drive", price: 120, thumbnail: "9.jpg", code: "HD789", stock: 10, id: 9 },
-    { title: "Webcam", description: "HD webcam for video calls", price: 60, thumbnail: "10.jpg", code: "WC123", stock: 25, id: 10 },
-    { title: "Microphone", description: "Professional microphone for streaming", price: 150, thumbnail: "11.jpg", code: "MC456", stock: 12, id: 11 },
-    { title: "Printer", description: "All-in-one color printer", price: 300, thumbnail: "12.jpg", code: "PR789", stock: 8, id: 12 },
-    { title: "Mochila", description: "A high-performance backpack", price: 1500, thumbnail: "13.jpg", code: "LT124", stock: 5, id: 13 },
-    { title: "Mochila", description: "A high-performance backpack", price: 1500, thumbnail: "13.jpg", code: "LT124", stock: 5, id: 13 },
-    { title: "Mochila :))", description: "A high-performance backpack", price: 1500, thumbnail: "14.jpg", code: "LT127", stock: 5, id: 14 },
-    { title: "Mochila", description: "A high-performance backpack", price: 1500, thumbnail: "15.jpg", code: "LT12", stock: 5, id: 15 },
-    { title: "Mochila", description: "A high-performance backpack", price: 1500, thumbnail: "16.jpg", code: "LT12", stock: 5, id: 16 },
-    { title: "Mochila", description: "A high-performance backpack", price: 1500, thumbnail: "17.jpg", code: "LT12", stock: 5, id: 17 }
-];
-  
+const manager = new ProductManager('./src/products.json');
+let products = await manager.getProducts();
 
-usersRoutes.get('/', (req, res) => {
-    res.send({products});
+productsRouter.get('/', (req, res) => {
+    const limit = parseInt(req.query.limit); 
+
+    if (!isNaN(limit)) {
+        return res.send({ products: products.slice(0, limit) });
+    }
+
+    res.send({ products });
 });
 
-export default usersRoutes
-export {
-    products
-}
+productsRouter.get('/:pid', (req, res) => {
+
+    const id = parseInt(req.params.pid)
+    const selectedProduct = products.find(product => product.id === id)
+
+    if(!selectedProduct) return res.send("Product not found")
+    
+    res.send({selectedProduct})
+})
+
+productsRouter.post('/', async (req, res) => {
+    const product = req.body;
+
+    const newProduct = {
+        ...product,
+        id: products.length > 0 ? products[products.length - 1].id + 1 : 1,
+    };
+
+    try {
+        await manager.addProduct(newProduct);
+        res.status(200).send({ status: 'success', message: 'Product added' });
+    } catch (error) {
+        res.status(400).send({ status: 'error', message: error.message });
+    }
+});
+
+productsRouter.put('/:productId', (req, res) => {
+    const productId = +req.params.productId; 
+    const productInfo = req.body;
+    console.log(products)
+
+    const productIndex = products.findIndex(product => product.id === productId);
+    console.log(productIndex)
+
+    if (productIndex === -1) {
+        return res.status(404).send({ status: 'Error', message: 'Product not found' });
+    }
+
+    const updatedProduct = {
+        ...products[productIndex], 
+        ...productInfo,           
+        id: productId             
+    };
+
+    try {
+        manager.updateProduct(productId, updatedProduct);
+        products[productIndex] = updatedProduct; 
+        res.send({ status: 'Success', message: 'Product updated' });
+    } catch (error) {
+        res.status(500).send({ status: 'Error', message: 'Failed to update product' });
+    }
+});
+
+
+productsRouter.delete('/:productId', (req, res) => {
+    const productId = + req.params.productId
+    const productsUpdated = products.filter(u => u.id !== productId)
+    products = [...productsUpdated]
+
+    try {
+        manager.deleteProduct(productId);
+        res.status(200).send({ status: 'success', message: 'Product deleted' });
+    } catch (error) {
+        res.status(400).send({ status: 'error', message: error.message });
+    }
+
+    res.send({status: 'Success', payload: productsUpdated})
+})
+
+export default productsRouter;

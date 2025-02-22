@@ -10,16 +10,5 @@
     
 
     {{{body}}} <!-- Aquí se renderizan las vistas secundarias -->
-
-    <script>
-        const modeButton = document.getElementById("mode-toggle");
-        let isAdmin = false;
-
-        modeButton.addEventListener("click", () => {
-            isAdmin = !isAdmin;
-            modeButton.textContent = isAdmin ? "Modo: Administrador" : "Modo: Cliente";
-            document.body.classList.toggle("admin-mode", isAdmin);
-        });
-    </script>
 </body>
 </html>

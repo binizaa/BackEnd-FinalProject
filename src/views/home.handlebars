@@ -1,19 +1,78 @@
-<div class="container">
-    <h1 class="title">Hello {{user.firstName}} {{user.lastName}}</h1>
-    <p class="subtitle">Welcome to our shop page.</p>
+<div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <p id="mode-text" style="margin: 0;">Modo: {{#if isAdmin}}Administrador{{else}}Cliente{{/if}}</p>
+        <button id="admin-toggle-btn" class="">Cambiar modo</button>
+    </div>
 
-    <div class="product-grid">
-    {{#each products}}
-            <div class="product-card">
-                <img src="{{thumbnail}}" alt="{{title}}" class="product-image">
-                <div class="product-info">
-                    <h2 class="product-title">{{title}}</h2>
-                    <p class="product-description">{{description}}</p>
-                    <p class="product-price">$ {{price}}</p>
-                    <p class="product-stock">Stock: {{stock}}</p>
-                    <button class="buy-button">Buy Now</button>
+    <div class="container">
+        <p class="subtitle">Welcome to our shop page.</p>
+
+        <h1>Chat con Socket.IO</h1>
+        <input type="text" id="textInput" placeholder="Escribe tu mensaje"/>
+        <button id="add">Enviar</button>
+        <div id="textOutput"></div>
+
+        <div class="product-grid">
+            {{#each products}}
+                <div class="product-card">
+                    <img src="{{thumbnail}}" alt="{{title}}" class="product-image">
+                    <div class="product-info">
+                        <h2 class="product-title">{{title}}</h2>
+                        <p class="product-description">{{description}}</p>
+                        <p class="product-price">$ {{price}}</p>
+                        <p class="product-stock">Stock: {{stock}}</p>
+                        <div class="button-container">
+                            <button class="buy-button action-button">{{#if ../isAdmin}}Edit Product{{else}}Buy Now{{/if}}</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        {{/each}}
+            {{/each}}
+        </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("admin-toggle-btn").addEventListener("click", async () => {
+        try {
+            const response = await fetch("/toggleAdmin", { method: "POST" });
+            const data = await response.json();
+
+            if (data.success) {
+                // Cambia el texto del párrafo que indica el modo
+                document.getElementById("mode-text").textContent = data.isAdmin ? "Modo: Administrador" : "Modo: Cliente";
+
+                // Cambia el texto de todos los botones de los productos
+                document.querySelectorAll(".action-button").forEach(button => {
+                    button.textContent = data.isAdmin ? "Edit Product" : "Buy Now";
+                });
+
+                // Agregar o quitar botón de basura dinámicamente
+                document.querySelectorAll(".product-card").forEach(card => {
+                    let deleteBtn = card.querySelector(".delete-button");
+
+                    if (data.isAdmin) {
+                        // Si el botón no existe, agregarlo
+                        if (!deleteBtn) {
+                            deleteBtn = document.createElement("button");
+                            deleteBtn.classList.add("delete-button");
+                            deleteBtn.innerHTML = "🗑️";
+                            deleteBtn.dataset.id = card.querySelector(".action-button").dataset.id;
+                            deleteBtn.addEventListener("click", deleteProduct);
+                            card.querySelector(".button-container").appendChild(deleteBtn);
+                        }
+                    } else {
+                        // Si el botón existe y el usuario no es admin, eliminarlo
+                        if (deleteBtn) {
+                            deleteBtn.remove();
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Error al cambiar el modo de usuario:", error);
+        }
+    });
+</script>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>

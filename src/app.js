@@ -23,3 +23,14 @@ const httpServer = app.listen(PORT, () => {
 });
 
 const socketServer = new Server(httpServer);
+
+const messages = [];
+socketServer.on('connection', (socket) => {
+    console.log("Se ha conectado un cliente");
+    socket.emit('messages', messages);
+
+    socket.on('message', data => {
+        messages.push({ id: socket.id, message: data });
+        socketServer.emit('messages', messages);
+    });
+});
