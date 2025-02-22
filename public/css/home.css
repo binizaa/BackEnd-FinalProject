@@ -1,20 +1,17 @@
 /* General */
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f8f6f4; /* Fondo en tono beige claro */
+    background-color: #f8f6f4;
     margin: 0;
     padding: 40px 20px;
     display: flex;
     justify-content: center;
-    position: sticky;
-    top: 0;
     width: 100%;
-    z-index: 1000;
 }
 
 /* Contenedor principal */
 .container {
-    width: 90%;
+    width: 100%;
     max-width: 1200px;
     text-align: center;
 }
@@ -22,7 +19,7 @@ body {
 /* Título principal */
 .title {
     font-size: 2.8rem;
-    color: #3d3d3d; /* Gris oscuro elegante */
+    color: #3d3d3d;
     font-weight: 600;
     margin-bottom: 10px;
     letter-spacing: 1px;
@@ -31,31 +28,33 @@ body {
 /* Subtítulo */
 .subtitle {
     font-size: 1.2rem;
-    color: #7a7a7a; /* Gris medio */
+    color: #7a7a7a;
     margin-bottom: 40px;
     font-weight: 300;
 }
 
 /* Grid de productos */
 .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px; /* Más espacio entre tarjetas */
-    justify-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centrar las tarjetas */
+    align-items: center; /* Alinear verticalmente */
+    gap: 20px; /* Espaciado uniforme */
     padding: 20px 0;
 }
 
 /* Tarjetas de producto */
 .product-card {
-    background: #ffffff; /* Blanco puro */
+    background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil y elegante */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    width: 320px; /* Tamaño uniforme */
+    width: 280px; /* Tamaño fijo para mejor distribución */
     height: 460px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     transition: all 0.3s ease-in-out;
 }
 
@@ -65,7 +64,7 @@ body {
     height: 220px;
     object-fit: cover;
     border-radius: 10px;
-    border: 1px solid #e0e0e0; /* Borde gris muy claro */
+    border: 1px solid #e0e0e0;
 }
 
 /* Información del producto */
@@ -81,7 +80,7 @@ body {
 /* Nombre del producto */
 .product-title {
     font-size: 1.4rem;
-    color: #333333; /* Negro suave */
+    color: #333333;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -99,7 +98,7 @@ body {
 .product-price {
     font-size: 1.3rem;
     font-weight: 600;
-    color: #444; /* Gris oscuro */
+    color: #444;
 }
 
 /* Stock */
@@ -111,13 +110,13 @@ body {
 
 /* Botón */
 .buy-button {
-    background: #1e1e1e; /* Negro intenso */
+    background: #1e1e1e;
     color: white;
     border: none;
     padding: 12px;
     font-size: 1rem;
     font-weight: 500;
-    border-radius: 30px; /* Botón más elegante y curvado */
+    border-radius: 30px;
     cursor: pointer;
     margin-top: 15px;
     width: 100%;
@@ -125,5 +124,19 @@ body {
 }
 
 .buy-button:hover {
-    background: #555; /* Gris oscuro en hover */
+    background: #555;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 900px) {
+    .product-grid {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .product-card {
+        width: 100%;
+        max-width: 320px;
+    }
 }
